@@ -9,8 +9,7 @@ import { Post } from './entities/post.entity';
 @Injectable()
 export class PostService {
   constructor(
-    @InjectRepository(Post)
-    private postRepository: Repository<Post>,
+    @InjectRepository(Post) private postRepository: Repository<Post>,
   ) {}
 
   async create(data: CreatePostInput): Promise<Post> {

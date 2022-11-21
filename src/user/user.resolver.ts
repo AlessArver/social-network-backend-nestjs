@@ -1,19 +1,6 @@
-import {
-  WebSocketGateway,
-  SubscribeMessage,
-  WebSocketServer,
-  MessageBody,
-} from '@nestjs/websockets';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { UseGuards } from '@nestjs/common';
-import {
-  ResolveField,
-  Resolver,
-  Parent,
-  Query,
-  Mutation,
-  Args,
-  Context,
-} from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { Server } from 'socket.io';
 
 import { AuthGuard } from 'guards/auth.gaurd';
@@ -25,7 +12,6 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { LoginUserInput } from './dto/login-user.input';
 
 import { User } from './entities/user.entity';
-import { PostService } from 'post/post.service';
 
 @WebSocketGateway({
   cors: {
@@ -37,10 +23,7 @@ export class UserResolver {
   @WebSocketServer()
   server: Server;
 
-  constructor(
-    private readonly userService: UserService,
-    private postService: PostService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   @Mutation(() => User)
   createUser(@Args('createUserInput') createUserInput: CreateUserInput) {

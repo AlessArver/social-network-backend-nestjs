@@ -2,10 +2,19 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type User {
+  id: String!
+  first_name: String!
+  last_name: String!
+  avatar: String
+  email: String!
+  password: String!
+  is_online: Boolean!
+}
+
 type Post {
   id: String!
   text: String!
-  user: User!
   userId: String!
   created_at: DateTime!
 }
@@ -14,16 +23,6 @@ type Post {
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
-
-type User {
-  id: String!
-  first_name: String!
-  last_name: String!
-  avatar: String
-  email: String!
-  password: String!
-  posts: [Post!]
-}
 
 type Message {
   id: String!

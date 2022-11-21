@@ -3,11 +3,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
-import { User } from 'user/entities/user.entity';
 
 @ObjectType()
 @Entity()
@@ -19,10 +16,6 @@ export class Post {
   @Field()
   @Column()
   text: string;
-
-  @ManyToOne(() => User, (user) => user.posts)
-  @Field(() => User)
-  user: User;
 
   @Field()
   @Column()

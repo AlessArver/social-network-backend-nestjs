@@ -1,7 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-
-import { Post } from 'post/entities/post.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @ObjectType()
 @Entity()
@@ -30,7 +28,7 @@ export class User {
   @Column()
   password: string;
 
-  @OneToMany(() => Post, (post) => post.user)
-  @Field(() => [Post], { nullable: true })
-  posts: Post[];
+  @Field(() => Boolean, { defaultValue: false })
+  @Column({ default: false })
+  is_online: boolean;
 }
