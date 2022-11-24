@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { PostModule } from './post/post.module';
 import { MessageModule } from './message/message.module';
+import { FriendModule } from './friend/friend.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { MessageModule } from './message/message.module';
     UserModule,
     PostModule,
     MessageModule,
+    FriendModule,
   ],
 })
 export class AppModule {}

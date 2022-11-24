@@ -6,16 +6,14 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
-
-import { AuthGuard } from 'guards/auth.gaurd';
+import { Resolver, Query, Args } from '@nestjs/graphql';
 
 import { PostService } from './post.service';
 
 import { CreatePostInput } from './dto/create-post.input';
 
 import { Post } from './entities/post.entity';
+
 import { validateToken } from 'utils/validateToken';
 
 @WebSocketGateway({
