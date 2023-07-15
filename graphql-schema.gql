@@ -1,0 +1,103 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: String!
+  first_name: String!
+  last_name: String!
+  avatar: String
+  email: String!
+  password: String!
+  is_online: Boolean!
+  socket_id: String!
+}
+
+type Post {
+  id: String!
+  text: String!
+  userId: String!
+  created_at: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Friend {
+  id: String!
+  from_id: String!
+  to_id: String!
+  status: String!
+}
+
+type Query {
+  users: [User!]!
+  usersByIds(ids: [String!]!): [User!]!
+  user(id: String!): User!
+  me: User!
+  posts(userId: String!): [Post!]!
+  friends(friendsInput: FriendsInput!): [Friend!]!
+  friend(friendsInput: FriendsInput!): Friend!
+}
+
+input FriendsInput {
+  from_id: String
+  to_id: String
+  status: String
+  limit: Float
+}
+
+type Mutation {
+  createUser(createUserInput: CreateUserInput!): User!
+  login(loginUserInput: LoginUserInput!): String!
+  resetPassword(email: String!): String!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  removeUser(id: String!): User!
+  createPost(createPostInput: CreatePostInput!): Post!
+  removePost(id: String!): Post!
+  createFriend(createFriendInput: CreateFriendInput!): Friend!
+  updateFriend(updateFriendInput: UpdateFriendInput!): Friend!
+  removeFriend(id: String!): String!
+  removeFriends: String!
+}
+
+input CreateUserInput {
+  first_name: String!
+  last_name: String!
+  avatar: String
+  email: String!
+  password: String!
+}
+
+input LoginUserInput {
+  email: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  id: String!
+  first_name: String
+  last_name: String
+  avatar: String
+  email: String
+  password: String
+  is_online: Boolean
+}
+
+input CreatePostInput {
+  text: String!
+  userId: String!
+}
+
+input CreateFriendInput {
+  from_id: String!
+  to_id: String!
+  status: String!
+}
+
+input UpdateFriendInput {
+  id: String!
+  status: String!
+}

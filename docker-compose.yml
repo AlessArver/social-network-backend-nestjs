@@ -1,0 +1,19 @@
+version: '1.0'
+
+services:
+  postgres:
+    image: postgres
+    container_name: social-network
+    restart: always
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    volumes:
+      - db_data:/var/lib/postgresql/data/
+
+volumes:
+  db_data: {}
