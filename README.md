@@ -1,3 +1,8 @@
+<h3>What I'm doing:</h3>
+<ul>
+  <li>Add username to user</li>
+</ul>
+
 <h3>Realized:</h3>
 <ul>
   <li>Authorization</li>
@@ -9,7 +14,6 @@
 <h3>What I'll do later:</h3>
 <ul>
   <li>Chat</li>
-  <li>Ad other</li>
 </ul>
 
 <h3>How to setup?</h3>
