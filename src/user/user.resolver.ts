@@ -1,10 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
-import {
-  ConnectedSocket,
-  WebSocketGateway,
-  WebSocketServer,
-} from '@nestjs/websockets';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 
 import { AuthGuard } from 'guards/auth.gaurd';
@@ -16,6 +12,8 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { LoginUserInput } from './dto/login-user.input';
 
 import { User } from './entities/user.entity';
+import { TokensUserInput } from './dto/tokens-user.input';
+import { RecoverPasswordInput } from './dto/recover-password.input';
 
 enum USER_EVENTS {
   userUpdated = 'userUpdated',
@@ -42,7 +40,19 @@ export class UserResolver {
     return this.userService.login(loginUserInput);
   }
 
-  @Mutation(() => String)
+  @Query(() => Boolean)
+  recoverPasswordAccess(@Args('token') token: string) {
+    return this.userService.recoverPasswordAccess(token);
+  }
+
+  @Mutation(() => Boolean)
+  recoverPassword(
+    @Args('recoverPasswordInput') recoverPasswordInput: RecoverPasswordInput,
+  ) {
+    return this.userService.recoverPassword(recoverPasswordInput);
+  }
+
+  @Mutation(() => Boolean)
   resetPassword(@Args('email') email: string) {
     return this.userService.resetPassword(email);
   }
@@ -72,16 +82,19 @@ export class UserResolver {
     return this.userService.findOne(user.id);
   }
 
+  @Mutation(() => TokensUserInput)
+  @UseGuards(new AuthGuard())
+  getNewTokens(@Args('id') id: string) {
+    return this.userService.getNewTokens(id);
+  }
+
   @Mutation(() => User)
   @UseGuards(new AuthGuard())
   async updateUser(
     @Context('user') user: { id: string },
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
   ) {
-    const newUser = await this.userService.update({
-      meId: user.id,
-      updateUserInput,
-    });
+    const newUser = await this.userService.update(updateUserInput);
 
     this.server.emit(`user-${user.id}`, newUser);
 

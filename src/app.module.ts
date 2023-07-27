@@ -26,9 +26,15 @@ import { MailModule } from './mail/mail.module';
       synchronize: true,
     }),
     GraphQLModule.forRoot({
+      credentials: true,
       autoSchemaFile: join(process.cwd(), './graphql-schema.gql'),
       driver: ApolloDriver,
       context: ({ req }) => ({ headers: req.headers }),
+      playground: {
+        settings: {
+          'request.credentials': 'include',
+        },
+      },
     }),
     UserModule,
     PostModule,

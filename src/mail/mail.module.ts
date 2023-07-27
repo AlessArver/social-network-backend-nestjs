@@ -10,8 +10,9 @@ import { MailService } from './mail.service';
     MailerModule.forRoot({
       transport: {
         service: 'gmail',
+        secure: false,
         auth: {
-          user: process.env.MAIL_FROM,
+          user: process.env.MAIL_USER,
           pass: process.env.MAIL_PASSWORD,
         },
       },

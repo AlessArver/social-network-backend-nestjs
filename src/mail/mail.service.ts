@@ -19,7 +19,7 @@ export class MailService {
       })
       .catch((e) => {
         throw new HttpException(
-          `Ошибка работы почты: ${JSON.stringify(e)}`,
+          `Some error with mail: ${JSON.stringify(e)}`,
           HttpStatus.UNPROCESSABLE_ENTITY,
         );
       });

@@ -35,4 +35,12 @@ export class User {
   @Field(() => String)
   @Column({ unique: true, nullable: true })
   socket_id: string;
+
+  @Field(() => String)
+  @Column({ nullable: true })
+  refresh_token: string;
+
+  @Field(() => String)
+  @Column({ unique: true, nullable: true })
+  reset_password_token: string;
 }

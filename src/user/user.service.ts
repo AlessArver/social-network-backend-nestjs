@@ -10,6 +10,7 @@ import { comparePasswords, encodePassword } from 'utils/bcrypt';
 import { LoginUserInput } from './dto/login-user.input';
 import { isMe } from 'utils/isMe';
 import { MailService } from 'mail/mail.service';
+import { RecoverPasswordInput } from './dto/recover-password.input';
 
 @Injectable()
 export class UserService {
@@ -57,12 +58,36 @@ export class UserService {
     const isMatch = await comparePasswords(data.password, user.password);
 
     if (isMatch) {
-      return this.createToken({
-        id: user.id,
-      });
+      const tokens = await this.getNewTokens(user.id);
+      return tokens.accessToken;
     } else {
       throw new HttpException('Passwords is not compare', HttpStatus.NOT_FOUND);
     }
+  }
+
+  async getNewTokens(id: string) {
+    const tokens = await this.getTokens(id);
+    await this.updateRefreshToken(id, tokens.refreshToken);
+    return tokens;
+  }
+
+  async updateRefreshToken(userId: string, refreshToken: string) {
+    const hashedRefreshToken = await encodePassword(refreshToken);
+    await this.update({ id: userId, refresh_token: hashedRefreshToken });
+  }
+
+  async getTokens(id: string) {
+    const accessToken = jwt.sign(id, process.env.JWT_ACCESS_SECRET, {
+      // expiresIn: 60 * 60,
+    });
+    const refreshToken = jwt.sign(id, process.env.JWT_REFRESH_SECRET, {
+      // expiresIn: 60 * 60,
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
   async resetPassword(email: string) {
@@ -79,15 +104,67 @@ export class UserService {
       );
     }
 
-    const token = await this.createToken({
-      id: user.id,
-    });
+    const token = this.createToken(
+      { id: user.id },
+      process.env.JWT_RESET_PASSWORD_SECRET,
+      // { expiresIn: '1h' },
+    );
+
+    this.userRepository.save({ ...user, reset_password_token: token });
     this.mailService.resetPassword(email, token);
-    return 'true';
+
+    return true;
   }
 
-  createToken(user: { id: string }) {
-    return jwt.sign(user, 'secret-key');
+  async recoverPasswordAccess(token: string) {
+    const verifyToken = jwt.verify(
+      token,
+      process.env.JWT_RESET_PASSWORD_SECRET,
+    );
+    const user = await this.userRepository.findOne({
+      where: {
+        reset_password_token: token,
+      },
+    });
+
+    if (!verifyToken) {
+      throw new HttpException(`Token is not valid`, HttpStatus.FORBIDDEN);
+    }
+
+    if (!user) return false;
+
+    return true;
+  }
+
+  async recoverPassword(recoverPasswordInput: RecoverPasswordInput) {
+    const user = await this.userRepository.findOne({
+      where: { reset_password_token: recoverPasswordInput.token },
+    });
+
+    if (!user) {
+      throw new HttpException(
+        `User with this token: ${recoverPasswordInput.token} is not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const password = await encodePassword(recoverPasswordInput.password);
+
+    this.userRepository.save({
+      ...user,
+      reset_password_token: null,
+      password,
+    });
+
+    return true;
+  }
+
+  createToken(
+    data: { [key: string]: any },
+    secretKey: string,
+    optinos?: jwt.SignOptions,
+  ) {
+    return jwt.sign(data, secretKey, optinos);
   }
 
   async findAll(): Promise<User[]> {
@@ -139,37 +216,19 @@ export class UserService {
     }
   }
 
-  async update({
-    meId,
-    updateUserInput,
-  }: {
-    meId: string;
-    updateUserInput: UpdateUserInput;
-  }): Promise<User> {
-    return isMe<Promise<User>>({
-      meId,
-      id: updateUserInput.id,
-      textError: 'You cannot update another user',
-      func: async () => {
-        const user = await this.userRepository.findOne({
-          where: { id: updateUserInput.id },
-        });
-
-        if (!user) {
-          throw new HttpException(
-            `User with this id: ${updateUserInput.id} is not found`,
-            HttpStatus.NOT_FOUND,
-          );
-        }
-
-        const newUser = this.userRepository.create({
-          ...user,
-          ...updateUserInput,
-        });
-
-        return this.userRepository.save(newUser);
-      },
+  async update(updateUserInput: UpdateUserInput): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id: updateUserInput.id },
     });
+
+    if (!user) {
+      throw new HttpException(
+        `User with this id: ${updateUserInput.id} is not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return this.userRepository.save({ ...user, ...updateUserInput });
   }
 
   async updateOnline({

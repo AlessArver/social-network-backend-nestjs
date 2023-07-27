@@ -6,20 +6,23 @@ export class UpdateUserInput {
   id: string;
 
   @Field({ nullable: true })
-  first_name: string;
+  first_name?: string;
 
   @Field({ nullable: true })
-  last_name: string;
+  last_name?: string;
 
   @Field({ nullable: true })
-  avatar: string;
+  avatar?: string;
 
   @Field({ nullable: true })
-  email: string;
+  email?: string;
 
   @Field({ nullable: true })
-  password: string;
+  password?: string;
 
   @Field({ nullable: true })
-  is_online: false;
+  is_online?: false;
+
+  @Field({ nullable: true })
+  refresh_token?: string;
 }

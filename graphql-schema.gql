@@ -11,6 +11,13 @@ type User {
   password: String!
   is_online: Boolean!
   socket_id: String!
+  refresh_token: String!
+  reset_password_token: String!
+}
+
+type TokensUserInput {
+  accessToken: String!
+  refreshToken: String!
 }
 
 type Post {
@@ -33,6 +40,7 @@ type Friend {
 }
 
 type Query {
+  recoverPasswordAccess(token: String!): Boolean!
   users: [User!]!
   usersByIds(ids: [String!]!): [User!]!
   user(id: String!): User!
@@ -52,7 +60,9 @@ input FriendsInput {
 type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   login(loginUserInput: LoginUserInput!): String!
-  resetPassword(email: String!): String!
+  recoverPassword(recoverPasswordInput: RecoverPasswordInput!): Boolean!
+  resetPassword(email: String!): Boolean!
+  getNewTokens(id: String!): TokensUserInput!
   updateUser(updateUserInput: UpdateUserInput!): User!
   removeUser(id: String!): User!
   createPost(createPostInput: CreatePostInput!): Post!
@@ -76,6 +86,11 @@ input LoginUserInput {
   password: String!
 }
 
+input RecoverPasswordInput {
+  token: String!
+  password: String!
+}
+
 input UpdateUserInput {
   id: String!
   first_name: String
@@ -84,6 +99,7 @@ input UpdateUserInput {
   email: String
   password: String
   is_online: Boolean
+  refresh_token: String
 }
 
 input CreatePostInput {
